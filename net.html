@@ -1,0 +1,75 @@
+<!-- <!DOCTYPE html>
+<html>
+<body>
+
+<div id="log"></div>
+<script>
+log = document.querySelector("#log")
+// var ws = new WebSocket("ws://localhost:8765/");
+var ws = new WebSocket("ws://192.168.137.1:8765/");
+ws.onopen = function() {
+    ws.send("Hello, server!");
+};
+
+ws.onmessage = function(evt) {
+    alert("Message from server: " + evt.data);
+    log.innerHTML = evt.data;
+};
+
+ws.onerror = function(evt) {
+    alert("WebSocket error: " + evt.data);
+};
+</script>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- <canvas width="722" height="1536"></canvas> -->
+<canvas width="422" height="296"></canvas>
+<style>
+    canvas {
+        border: solid black 1px;
+    }
+</style>
+<script>
+canvas = document.querySelector('canvas');
+ctx = canvas.getContext('2d');
+var ws = new WebSocket("ws://192.168.137.1:8765/");
+
+// ws.onopen = function() {
+//     ws.send("size");
+// };
+
+ws.onmessage = function(evt) {
+    // canvas.width = 100;
+    // console.log(evt.data["size"]);
+    // console.log(JSON.parse(evt.data));
+    if(JSON.parse(evt.data)) {
+        data = JSON.parse(evt.data);
+        if(data.diff) {
+            // canvas.draw
+            // console.log(data.diff);
+            for(p of data.diff) {
+                // console.log(p);
+                ctx.fillStyle = `rgb(${p[1].join(" ")})`;
+                ctx.fillRect(p[0][0],p[0][1],1,1);
+            }
+        }
+        if(data.size){
+            canvas.width=data.size[0];
+            canvas.height=data.size[1];
+        }
+    }
+};
+
+ws.onerror = function(evt) {
+    console.error("WebSocket error observed:", evt);
+};
+</script>
+
+</body>
+</html>
